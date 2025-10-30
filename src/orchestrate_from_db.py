@@ -9,8 +9,9 @@ load_dotenv()
 from harvestapi_dispatch_standalone import harvest_for_urls, normalize_linkedin_url
 from json_2_sql import update_items_in_db, DB, SCHEMA
 
-CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "10"))
-MAX_URLS_PER_RUN = int(os.getenv("MAX_URLS_PER_RUN", "1000"))  # 0 = sin límite
+CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "20"))
+MAX_URLS_PER_RUN = int(os.getenv("MAX_URLS_PER_RUN", "175"))  # 0 = sin límite
+MIN_CONNECTIONS = int(os.getenv("MIN_CONNECTIONS", "0"))
 REFRESH_CHILDREN = os.getenv("REFRESH_CHILDREN", "true").lower() == "true"
 
 def get_pending_urls(limit: int) -> List[Tuple[int, str]]:
@@ -19,6 +20,7 @@ def get_pending_urls(limit: int) -> List[Tuple[int, str]]:
     FROM {SCHEMA}.profiles
     WHERE public_identifier IS NULL
       AND linkedin_url IS NOT NULL
+      AND connections >= {MIN_CONNECTIONS}
     ORDER BY profile_id
     LIMIT %s;
     """
@@ -29,6 +31,7 @@ def get_pending_urls(limit: int) -> List[Tuple[int, str]]:
             return cur.fetchall()
     finally:
         conn.close()
+
 
 def chunked(lst, n):
     for i in range(0, len(lst), n):
