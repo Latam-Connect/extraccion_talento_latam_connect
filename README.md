@@ -37,7 +37,7 @@ src/orchestrate_from_db.py
 4. Si un perfil devuelve error 403 u otro tipo de fallo, se marca automáticamente:
    ```sql
    UPDATE profiles
-   SET public_identifier = 'UNACCESSIBLE'
+   SET public_identifier = 'INACCESIBLE'
    WHERE linkedin_url = '...';
    ```
 
