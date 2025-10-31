@@ -82,7 +82,7 @@ Durante la ejecución verás mensajes como estos:
 ```
 Encontrados 175 pendientes. CHUNK_SIZE=20
 Lanzado run 7Ui5FYbl5gh0PKoag (urls=20)
-⚠️ 3 perfiles marcados como UNACCESSIBLE.
+⚠️ 3 perfiles marcados como INACCESIBLE.
 🧾 Lote listo: 17 perfiles. Acumulado: 34
 🎉 Terminado. Perfiles actualizados: 120
 ```
