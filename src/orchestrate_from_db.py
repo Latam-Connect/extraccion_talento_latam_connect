@@ -9,8 +9,8 @@ load_dotenv()
 from harvestapi_dispatch_standalone import harvest_for_urls, normalize_linkedin_url
 from json_2_sql import update_items_in_db, DB, SCHEMA
 
-CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "20"))
-MAX_URLS_PER_RUN = int(os.getenv("MAX_URLS_PER_RUN", "175"))  # 0 = sin límite
+CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "5"))
+MAX_URLS_PER_RUN = int(os.getenv("MAX_URLS_PER_RUN", "5"))  # 0 = sin límite
 MIN_CONNECTIONS = int(os.getenv("MIN_CONNECTIONS", "0"))
 REFRESH_CHILDREN = os.getenv("REFRESH_CHILDREN", "true").lower() == "true"
 
@@ -50,7 +50,36 @@ def main():
         urls = [normalize_linkedin_url(u) for _, u in batch if u]
         if not urls:
             continue
-        items = harvest_for_urls(urls)                # 1) actor
+        items = harvest_for_urls(urls)  # 1) actor
+
+        # --- Marcar como INACCESSIBLE los que devolvieron error ---
+        failed_urls = []
+        for r in items:
+            # Algunos actores devuelven estructura con 'status' o 'error'
+            status = r.get("status")
+            if status == 403 or r.get("error"):
+                query = r.get("query") or {}
+                failed_urls.append(query.get("url"))
+
+        if failed_urls:
+            print(f"⚠️ {len(failed_urls)} perfiles marcados como INACCESIBLE.")
+            try:
+                conn = psycopg2.connect(**DB)
+                with conn.cursor() as cur:
+                    cur.execute(f"SET search_path TO {SCHEMA}")
+                    for u in failed_urls:
+                        if u:
+                            cur.execute("""
+                                UPDATE profiles
+                                SET public_identifier = 'INACCESIBLE'
+                                WHERE LOWER(rtrim(linkedin_url,'/')) = LOWER(rtrim(%s,'/'));
+                            """, (u,))
+                conn.commit()
+                conn.close()
+            except Exception as e:
+                print(f"Error al marcar INACCESIBLE: {e}")
+        # ------------------------------------------------------------
+
         n = update_items_in_db(items, REFRESH_CHILDREN)  # 2) update por linkedin_url (+ refresh hijos)
         processed += n
         print(f"🧾 Lote listo: {n} perfiles. Acumulado: {processed}")
