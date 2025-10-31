@@ -89,6 +89,42 @@ Lanzado run 7Ui5FYbl5gh0PKoag (urls=20)
 
 ---
 
+## 🧩 Script de inspección de perfiles (`inspect_profile_v2.py`)
+
+Este script permite **verificar manualmente** la información completa de un perfil en la base de datos, ya sea usando su `profile_id` o su `linkedin_url`.  
+Está pensado para comprobar que los datos extraídos por el orquestador coincidan con la información real visible en LinkedIn.
+
+---
+
+### ⚙️ Funcionalidad
+
+- Muestra en consola todos los datos asociados a un perfil:
+  - Información básica (`profiles`)
+  - Experiencias laborales (`experiences` + `companies`)
+  - Formación académica (`educations` + `educational_institutions`)
+  - Idiomas (`profile_languages` + `languages`)
+  - Habilidades (`profile_skills` + `skills`)
+  - Resumen de cobertura por categoría
+
+- Permite **exportar un JSON tipo “dossier”** con toda esa información ya normalizada.
+
+---
+
+### 🚀 Uso
+
+Desde la raíz del proyecto:
+
+```bash
+# Por profile_id
+python inspect_profile_v2.py --id 4067
+
+# Por URL de LinkedIn (resuelve automáticamente el profile_id)
+python inspect_profile_v2.py --url "https://www.linkedin.com/in/iñaki-garin-candido-1aa6441b7"
+
+# Exportar los datos a un JSON
+python inspect_profile_v2.py --id 4067 --out dossier_4067.json
+
+
 ## 🧹 Notas adicionales
 
 - Los perfiles con `public_identifier = 'INACCESIBLE'` **no se volverán a procesar**.
