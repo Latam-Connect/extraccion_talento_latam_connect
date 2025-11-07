@@ -38,7 +38,7 @@ CSV_PATH = Path(r"data\prueba\linkedin_unificado.csv")  # ← cámbialo a tu CSV
 OUT_PATH = CSV_PATH.with_name(CSV_PATH.stem + "_with_slack_counts_llm.csv")
 
 # Slack
-SLACK_BOT_TOKEN = os.getenv("SLACK_BOT_TOKEN", "xoxb-6017410961072-9738902398629-5iut1HOqDMqN44bamQVF21Hz")
+SLACK_BOT_TOKEN = os.getenv("SLACK_BOT_TOKEN")
 SLACK_CHANNEL_ID = "C09NNL40TB2"
 
 # Lotes y tiempos
