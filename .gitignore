@@ -9,3 +9,5 @@ __pycache__/
 # Archivos locales de VSCode / OS
 .vscode/
 .DS_Store
+
+.slack_tokens.json
