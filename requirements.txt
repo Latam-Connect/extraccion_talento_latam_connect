@@ -6,3 +6,4 @@ ipykernel>=6.29
 jupyter>=1.0
 slack_sdk
 ollama
+regex
